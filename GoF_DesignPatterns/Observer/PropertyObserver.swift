@@ -5,6 +5,11 @@
 //  Created by Luis David Goyes Garces on 28/11/24.
 //
 
+struct Dog {
+    var name: String
+    var breed: String
+}
+
 class SomeClass {
     var name : String {
         didSet {
