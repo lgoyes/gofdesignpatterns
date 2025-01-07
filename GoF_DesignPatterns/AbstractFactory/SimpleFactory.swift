@@ -5,25 +5,34 @@
 //  Created by Luis David Goyes Garces on 12/12/24.
 //
 
-class FactoryProduct {
+protocol FactoryProductType {
+    func doSomething()
+}
+
+class FactoryProduct: FactoryProductType {
     func doSomething() {}
 }
+
 class AnotherFactoryProduct: FactoryProduct {}
 
-class Factory {
+protocol FactoryType {
+    func createProduct() -> FactoryProductType
+}
+
+class Factory: FactoryType {
     private static let instance = Factory()
-    private init() {}
+    init() {}
     
     func createProduct()
-    -> FactoryProduct { FactoryProduct()}
+    -> FactoryProductType { FactoryProduct()}
     
-    static func getInstance() -> Factory {
+    static func getInstance() -> FactoryType {
         instance
     }
 }
 class FactoryClient {
-    let factory: Factory
-    init(factory: Factory) {
+    let factory: FactoryType
+    init(factory: FactoryType) {
         self.factory = factory
     }
     
