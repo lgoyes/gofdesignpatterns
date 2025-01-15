@@ -28,6 +28,103 @@ final class FanDriver {
     func turnOff() { state = .off }
 }
 
+enum Cleaner {
+    enum Mode {
+        case vacuum, mop, all
+    }
+    enum State {
+        case off, charging, idle, cleaning
+    }
+}
+
+protocol CleanerDriverAdapter {
+    func getMode() -> Cleaner.Mode
+    func getState() -> Cleaner.State
+    func set(mode: Cleaner.Mode)
+    func set(state: Cleaner.State)
+}
+
+class XiaomiS20CleanerDriverModeMapper {
+    func map(_ mode: XiaomiS20CleanerDriver.Mode) -> Cleaner.Mode {
+        switch mode {
+        case .vacuum:
+            return .vacuum
+        case .mop:
+            return .mop
+        case .all:
+            return .all
+        }
+    }
+    
+    func invert(_ mode: Cleaner.Mode) -> XiaomiS20CleanerDriver.Mode {
+        switch mode {
+        case .vacuum:
+            return .vacuum
+        case .mop:
+            return .mop
+        case .all:
+            return .all
+        }
+    }
+}
+
+class XiaomiS20CleanerDriverStateMapper {
+    func map(_ state: XiaomiS20CleanerDriver.State) -> Cleaner.State {
+        switch state {
+        case .off:
+            return .off
+        case .charging:
+            return .charging
+        case .idle:
+            return .idle
+        case .cleaning:
+            return .cleaning
+        }
+    }
+    func invert(_ state: Cleaner.State) -> XiaomiS20CleanerDriver.State {
+        switch state {
+        case .off:
+            return .off
+        case .charging:
+            return .charging
+        case .idle:
+            return .idle
+        case .cleaning:
+            return .cleaning
+        }
+    }
+}
+
+class XiaomiS20CleanerDriverAdapter: CleanerDriverAdapter {
+    private let adaptee: XiaomiS20CleanerDriver
+    private let modeMapper: XiaomiS20CleanerDriverModeMapper
+    private let stateMapper: XiaomiS20CleanerDriverStateMapper
+    
+    init(adaptee: XiaomiS20CleanerDriver, modeMapper: XiaomiS20CleanerDriverModeMapper, stateMapper: XiaomiS20CleanerDriverStateMapper) {
+        self.adaptee = adaptee
+        self.modeMapper = modeMapper
+        self.stateMapper = stateMapper
+    }
+    
+    func getMode() -> Cleaner.Mode {
+        let mode = adaptee.getMode()
+        return modeMapper.map(mode)
+    }
+    
+    func getState() -> Cleaner.State {
+        let state = adaptee.getState()
+        return stateMapper.map(state)
+    }
+    
+    func set(mode: Cleaner.Mode) {
+        adaptee.set(mode: modeMapper.invert(mode))
+    }
+
+    func set(state: Cleaner.State) {
+        adaptee.set(state: stateMapper.invert(state))
+    }
+}
+
 final class XiaomiS20CleanerDriver {
     enum Mode {
         case vacuum, mop, all
@@ -154,11 +251,11 @@ class TurnFanOffCommand: SetFanSpeedCommand {
 }
 
 class CleanHouseCommand: Command {
-    let cleaner: XiaomiS20CleanerDriver
-    private var previousMode: XiaomiS20CleanerDriver.Mode = .all
-    private var previousState: XiaomiS20CleanerDriver.State = .off
+    let cleaner: CleanerDriverAdapter
+    private var previousMode: Cleaner.Mode = .all
+    private var previousState: Cleaner.State = .off
     
-    init(cleaner: XiaomiS20CleanerDriver) {
+    init(cleaner: CleanerDriverAdapter) {
         self.cleaner = cleaner
     }
     
@@ -315,9 +412,13 @@ class RemoteControllerFactory {
         result.set(command: TurnFanOffCommand(fan: fan), at: 3)
         
         let cleaner = XiaomiS20CleanerDriver()
-        result.set(command: VacuumHouseCommand(cleaner: cleaner), at: 4)
-        result.set(command: MopFloorCommand(cleaner: cleaner), at: 5)
-        result.set(command: TurnCleanerOffCommand(cleaner: cleaner), at: 6)
+        let cleanerModeMapper = XiaomiS20CleanerDriverModeMapper()
+        let cleanerStateMapper = XiaomiS20CleanerDriverStateMapper()
+        let cleanerAdapter = XiaomiS20CleanerDriverAdapter(adaptee: cleaner, modeMapper: cleanerModeMapper, stateMapper: cleanerStateMapper)
+
+        result.set(command: VacuumHouseCommand(cleaner: cleanerAdapter), at: 4)
+        result.set(command: MopFloorCommand(cleaner: cleanerAdapter), at: 5)
+        result.set(command: TurnCleanerOffCommand(cleaner: cleanerAdapter), at: 6)
         
         let blind = BlindDriver()
         result.set(command: OpenBlindCommand(blind: blind), at: 7)
@@ -328,7 +429,7 @@ class RemoteControllerFactory {
         result.set(command: TurnLampOffCommand(lamp: lamp), at: 10)
         
         let wakeupCommand = MacroCommand(commands: [
-            VacuumHouseCommand(cleaner: cleaner),
+            VacuumHouseCommand(cleaner: cleanerAdapter),
             OpenBlindCommand(blind: blind),
             SetFanSpeedToHighCommand(fan: fan),
         ])
