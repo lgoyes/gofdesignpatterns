@@ -5,14 +5,31 @@
 //  Created by Luis David Goyes Garces on 9/1/25.
 //
 
-class Sansa {
-    let musicPlayer: MusicPlayer
-    
-    init(musicPlayer: MusicPlayer) {
-        self.musicPlayer = musicPlayer
+protocol VideoPlayer {
+    func playVideo(fileName: String) -> String
+    func executeSomethingElse()
+    func recordVideo()
+    func pauseVideo()
+    func resumeVideo()
+}
+
+class SansaMP4Player {
+    let videoPlayer: VideoPlayer
+    init(videoPlayer: VideoPlayer) {
+        self.videoPlayer = videoPlayer
     }
-    
-    func main() {
+    func playVideo() {
+        let playing = videoPlayer.playVideo(fileName: "somefilm.mp4")
+        videoPlayer.executeSomethingElse()
+        videoPlayer.pauseVideo()
+        videoPlayer.pauseVideo()
+        videoPlayer.resumeVideo()
+        print(playing)
+    }
+}
+
+class Sansa {
+    static func playSong(musicPlayer: MusicPlayer) {
         let playing = musicPlayer.playSong(fileName: "song.mp3")
         print(playing)
     }
