@@ -138,7 +138,7 @@ class ContextFactory {
     }
 }
 
-class Client {
+fileprivate class Client {
     enum Option: Int {
         case coin100 = 1, coin200, redButton, greenButton, quit
     }
@@ -186,5 +186,3 @@ class Client {
         return Option(rawValue: option)!
     }
 }
-
-Client().main()

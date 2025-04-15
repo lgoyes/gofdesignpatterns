@@ -107,5 +107,3 @@ func getEvent() -> Event {
     } while !validOption
     return Event(rawValue: option)!
 }
-
-main()

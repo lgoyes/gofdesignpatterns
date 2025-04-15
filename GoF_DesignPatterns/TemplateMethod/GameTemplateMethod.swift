@@ -88,7 +88,7 @@ class HaloLoader: GameLoader {
 }
 
 
-class Client {
+fileprivate class Client {
     func main () {
         let got = createGoTLoader()
         got.load()
