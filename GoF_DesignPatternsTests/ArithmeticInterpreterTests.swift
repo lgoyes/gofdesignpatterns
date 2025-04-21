@@ -32,11 +32,11 @@ class ArithmeticInterpreterTests {
         lexer.execute()
         let tokens = lexer.getResult()
         
-        let sut = TokenParser(input: tokens)
-        try sut.execute()
-        let result = sut.getResult()
+        let sut = DescendentTokenParser(tokens: tokens)
+        let expression = try sut.parse()
+        let result = expression.interpret()
         
-        #expect(result?.value == -19)
+        #expect(result == -19)
     }
     
     @Test
@@ -45,23 +45,48 @@ class ArithmeticInterpreterTests {
         lexer.execute()
         let tokens = lexer.getResult()
         
-        let sut = TokenParser(input: tokens)
-        try sut.execute()
-        let result = sut.getResult()
+        let sut = DescendentTokenParser(tokens: tokens)
+        let expression = try sut.parse()
+        let result = expression.interpret()
         
-        #expect(result?.value == 14)
+        #expect(result == 14)
     }
     
     @Test
     func parsing3() throws {
+        let lexer = Lexer(input: "15+2*3")
+        lexer.execute()
+        let tokens = lexer.getResult()
+        
+        let sut = DescendentTokenParser(tokens: tokens)
+        let expression = try sut.parse()
+        let result = expression.interpret()
+        
+        #expect(result == 21)
+    }
+    
+    @Test
+    func parsing4() throws {
+        let lexer = Lexer(input: "(15+2)*3")
+        lexer.execute()
+        let tokens = lexer.getResult()
+        
+        let sut = DescendentTokenParser(tokens: tokens)
+        let expression = try sut.parse()
+        let result = expression.interpret()
+        
+        #expect(result == 51)
+    }
+    
+    @Test
+    func parsing5() throws {
         let lexer = Lexer(input: "(15+2)-+3")
         lexer.execute()
         let tokens = lexer.getResult()
         
-        let sut = TokenParser(input: tokens)
-        
-        #expect(throws: TokenParser.Error.invalidConsecutiveOperands) {
-            try sut.execute()
+        let sut = DescendentTokenParser(tokens: tokens)
+        #expect(throws: DescendentTokenParser.Error.unexpectedToken("+") ) {
+            try sut.parse()
         }
     }
 }
