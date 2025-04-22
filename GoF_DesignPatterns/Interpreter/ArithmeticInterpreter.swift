@@ -49,9 +49,6 @@ class BinaryOperationNode: Expression {
             return left.interpret() / right.interpret()
         }
     }
-    func set(operator: Operator) {
-        self.`operator` = `operator`
-    }
 }
 
 class TokenInterator {
@@ -70,11 +67,11 @@ class TokenInterator {
     }
     
     func getNext() -> Token? {
-        guard position < tokens.count else {
+        guard let token = peek() else {
             return nil
         }
-        defer { position += 1 }
-        return tokens[position]
+        position += 1
+        return token
     }
 }
 

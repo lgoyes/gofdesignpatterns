@@ -103,32 +103,37 @@ class Lexer {
             switch String(input[input.index(input.startIndex, offsetBy: i)]) {
             case "+":
                 result.append(AdditionToken())
+                i += 1
             case "-":
                 result.append(SubtractionToken())
+                i += 1
             case "*":
                 result.append(MultiplicationToken())
+                i += 1
             case "/":
                 result.append(DivisionToken())
+                i += 1
             case "(":
                 result.append(LeftParenthesisToken())
+                i += 1
             case ")":
                 result.append(RightParenthesisToken())
+                i += 1
             default:
                 var integerString = ""
                 for j in i..<input.count {
                     let char = String(input[input.index(input.startIndex, offsetBy: j)])
                     if Int(char) != nil {
                         integerString.append(char)
-                        i += 1
                     } else {
-                        i -= 1
                         break
                     }
                 }
                 let integerToken = IntegerToken(text: integerString)
                 result.append(integerToken)
+                
+                i += integerString.count
             }
-            i += 1
         }
     }
     func getResult() -> [Token] {

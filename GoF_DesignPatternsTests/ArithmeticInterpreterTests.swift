@@ -89,4 +89,16 @@ class ArithmeticInterpreterTests {
             try sut.parse()
         }
     }
+    
+    @Test
+    func interpretation() {
+        let expression = BinaryOperationNode(left:
+                            BinaryOperationNode(left: NumberExpression(15),
+                                                right: NumberExpression(2),
+                                                operator: .addition),
+                         right: NumberExpression(3),
+                         operator: .subtraction)
+        let result = expression.interpret()
+        #expect(result == 14)
+    }
 }
