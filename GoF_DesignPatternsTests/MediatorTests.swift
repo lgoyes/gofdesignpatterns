@@ -39,10 +39,9 @@ final class MediatorTests {
         user2.send(privateMessage: "Hola, User1", to: "User1")
         
         #expect(printedMessages.sorted() == [
-            "[User1]: Received message: Hola from Mediator",
             "[User1]: Received message: Hola, User1 from User2",
-            "[User2]: Received message: Hola from Mediator",
-            "[User3]: Received message: Hola from Mediator"
+            "[User2]: Received message: Hola from User1",
+            "[User3]: Received message: Hola from User1"
         ])
     }
     func print(_ message: String) {
