@@ -16,7 +16,9 @@ class PrototypeTests {
         
         let newCar = referenceCar.clone()
         newCar.year = 2025
+        newCar.engine.year = 2025
         
         #expect(referenceCar.year == 2020)
+        #expect(referenceCar.engine.year == 2020)
     }
 }

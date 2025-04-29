@@ -5,13 +5,13 @@
 //  Created by Luis David Goyes Garces on 29/4/25.
 //
 
-class CarEngine {
+class CarEngine: Prototype {
     private let type: String
     private let displacement: Int
     private let power: Int
     private let torque: Int
     private let efficiency: Double
-    private let year: Int
+    var year: Int
     init(type: String, displacement: Int, power: Int, torque: Int, efficiency: Double, year: Int) {
         self.type = type
         self.displacement = displacement
@@ -20,7 +20,17 @@ class CarEngine {
         self.efficiency = efficiency
         self.year = year
     }
-    
+    required init(copyFrom prototype: CarEngine) {
+        self.type = prototype.type
+        self.displacement = prototype.displacement
+        self.power = prototype.power
+        self.torque = prototype.torque
+        self.efficiency = prototype.efficiency
+        self.year = prototype.year
+    }
+    func clone() -> Self {
+        return Self.init(copyFrom: self)
+    }
     // other methods
 }
 
@@ -31,7 +41,7 @@ protocol Prototype {
 class Car: Prototype {
     private let brand: String
     private let color: String
-    private let engine: CarEngine
+    let engine: CarEngine
     private let transmission: String
     private let seats: Int
     private let doors: Int
@@ -56,7 +66,7 @@ class Car: Prototype {
     required init(copyFrom prototype: Car) {
         self.brand = prototype.brand
         self.color = prototype.color
-        self.engine = prototype.engine
+        self.engine = prototype.engine.clone()
         self.transmission = prototype.transmission
         self.seats = prototype.seats
         self.doors = prototype.doors
