@@ -81,7 +81,7 @@ class PersonAddressBuilder {
 class PersonBuilderClient {
     func main() {
         let personBuilder = PersonBuilder()
-        let person = personBuilder
+        let _ = personBuilder
             .lives()
                 .at("Calle 12 # 34 - 56")
                 .inCity("Medellín")
